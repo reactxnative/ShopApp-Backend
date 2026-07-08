@@ -1,0 +1,18 @@
+[
+  {
+    "id": "1b6b3b88-1089-406f-b68a-69d32f27e28a",
+    "name": "Rahul",
+    "email": "rahul@gmail.com",
+    "password": "123456",
+    "createdAt": "2026-07-08T03:07:42.053Z"
+  },
+  {
+    "id": "1a83889d-76f1-4499-bec4-59bfa30020ce",
+    "name": "Rahul Singh",
+    "email": "Test@gmail.com",
+    "password": "$2b$10$5yN0marE4EMepFieEgKcZ.fG1fC/63xskGDJp1AXVeHWqXR/IMP12",
+    "createdAt": "2026-07-08T03:12:45.688Z",
+    "mobile": "7503556033",
+    "address": "GZB"
+  }
+]
