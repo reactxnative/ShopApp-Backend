@@ -5,6 +5,7 @@ const productsFilePath = path.join(__dirname, "../data/products.json");
 const Product = require("../models/Product");
 const mongoose = require("mongoose");
 const asyncHandler = require('express-async-handler')
+const productService = require("../services/product.service");
 
 /**
  * Get Products
@@ -30,13 +31,8 @@ const asyncHandler = require('express-async-handler')
 //   }
 // };
 const getProducts = asyncHandler(async (req, res) => {
-  const products = await Product.find();
-
-  return res.status(200).json({
-    success: true,
-    total: products.length,
-    data: products,
-  });
+  const response = await productService.getProducts();
+  return res.status(200).json(response);
 })
 
 /**
@@ -83,25 +79,8 @@ const getProducts = asyncHandler(async (req, res) => {
 // };
 
 const addProduct = asyncHandler(async (req, res) => {
-  const { name, price, description } = req.body;
-
-  if (!name || !price || !description) {
-    const error = new Error("Name, price and description are required.");
-    error.statusCode = 400;
-
-    throw error;
-  }
-
-
-  const newProduct = await Product.create({ name, price, description, createdBy: req.user.id });
-
-  newProduct.save();
-
-  return res.status(201).json({
-    success: true,
-    message: "Product added successfully.",
-    data: newProduct,
-  });
+  const response = await productService.addProduct({ userId: req.user._id, ...req.body });
+  return res.status(201).json(response);
 })
 
 /**
@@ -149,34 +128,8 @@ const addProduct = asyncHandler(async (req, res) => {
 // };
 
 const updateProduct = asyncHandler(async (req, res) => {
-
-  const { id } = req.params;
-  const { name, price, description } = req.body;
-
-  // find and update product in mongo db
-  const product = await Product.findById(id);
-
-  if (!product) {
-
-    const error = new Error("Product not found.");
-    error.statusCode = 404;
-
-    throw error;
-  }
-
-  product.name = name ?? product.name;
-  product.price = price ?? product.price;
-  product.description = description ?? product.description;
-
-  product.save();
-
-
-  return res.status(200).json({
-    success: true,
-    message: "Product updated successfully.",
-    data: product,
-  });
-
+  const response = await productService.updateProduct({ id: req.params.id, ...req.body });
+  return res.status(200).json(response);
 })
 
 /**
@@ -217,37 +170,8 @@ const updateProduct = asyncHandler(async (req, res) => {
 // };
 
 const deleteProduct = asyncHandler(async (req, res) => {
-
-  const { id } = req.params;
-
-
-  // Validate ObjectId
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-
-    const error = new Error("Invalid Product ID");
-    error.statusCode = 400;
-
-    throw error;
-  }
-
-  // find and delete product in mongo db
-  const deletedProduct = await Product.findByIdAndDelete(id);
-
-  if (!deletedProduct) {
-
-
-    const error = new Error("Product not found.");
-    error.statusCode = 404;
-
-    throw error;
-  }
-
-  return res.status(200).json({
-    success: true,
-    message: "Product deleted successfully.",
-    productId: deletedProduct._id,
-  });
-
+  const response = await productService.deleteProduct({ id: req.params.id })
+  return res.status(200).json(response)
 
 })
 
@@ -286,36 +210,8 @@ const deleteProduct = asyncHandler(async (req, res) => {
 
 
 const getProduct = asyncHandler(async (req, res) => {
-  const { id } = req.params;
-
-  // Validate ObjectId
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-
-    const error = new Error("Invalid Product ID");
-    error.statusCode = 400;
-
-    throw error;
-  }
-
-  // Find Product
-  const product = await Product.findById(id).populate(
-    "createdBy",
-    "name email"
-  );
-
-  if (!product) {
-    const error = new Error("Product not found.");
-    error.statusCode = 404;
-
-    throw error;
-  }
-
-  return res.status(200).json({
-    success: true,
-    data: product,
-  });
-
-
+  const response = await productService.getProductById({id: req.params.id})
+  return res.status(200).json(response)
 })
 
 /**
@@ -363,38 +259,8 @@ const getProduct = asyncHandler(async (req, res) => {
 // }
 
 const updateProductByPatch = asyncHandler(async (req, res) => {
-  const { id } = req.params;
-  const { name, price, description } = req.body;
-
-  // Validate ObjectId
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    const error = new Error("Invalid Product ID");
-    error.statusCode = 400;
-
-    throw error;
-  }
-
-  const product = await Product.findById(id)
-
-  if (!product) {
-    const error = new Error("Product not found.");
-    error.statusCode = 404;
-
-    throw error;
-  }
-
-  product.name = name ?? product.name;
-  product.price = price ?? product.price;
-  product.description = description ?? product.description;
-
-  await product.save();
-
-
-  return res.status(200).json({
-    success: true,
-    message: "Product updated successfully.",
-    data: product,
-  });
+ const response = await productService.updateProduct({ id: req.params.id,...req.body })
+  return res.status(200).json(response)
 
 })
 
@@ -428,36 +294,9 @@ const updateProductByPatch = asyncHandler(async (req, res) => {
 // }
 
 const searchProductByName = asyncHandler(async (req, res) => {
-
-  const { name } = req.query;
-
-  if (!name) {
-
-
-    const error = new Error("Product name is required.");
-    error.statusCode = 400;
-
-    throw error;
-  }
-
-  const products = await Product.find({
-    name: { $regex: name, $options: "i" },
-  }).populate("createdBy", "name email");
-
-  if (products.length === 0) {
-
-
-    const error = new Error("No products found matching the search criteria.");
-    error.statusCode = 404;
-
-    throw error;
-  }
-
-  return res.status(200).json({
-    success: true,
-    total: products.length,
-    data: products,
-  });
+  const response = await productService.getProductByName({name:req.params.name})
+  return res.status(200).json(response)
+  
 
 })
 

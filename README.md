@@ -1,48 +1,100 @@
 # 🛍️ ShopApp Backend API
 
-A production-ready RESTful Backend API built with **Node.js**, **Express.js**, and **MongoDB** featuring JWT Authentication, Refresh Token Authentication, User Management, Product Management, Global Error Handling, and MongoDB Atlas integration.
+A production-ready backend built with **Node.js**, **Express.js**, **MongoDB**, **REST API**, and **GraphQL (Apollo Server)**. This project demonstrates secure JWT authentication, Refresh Token authentication, User & Product Management, GraphQL integration, and a scalable service-layer architecture.
 
-## 🚀 Live API
+---
 
-**Base URL**
+# 🚀 Live Demo
+
+### REST API
 
 https://shopapp-backend-imrk.onrender.com
 
-## 🔗 GitHub Repository
+### GraphQL Playground
+
+https://shopapp-backend-imrk.onrender.com/graphql
+
+---
+
+# 🔗 GitHub Repository
 
 https://github.com/reactxnative/ShopApp-Backend
 
 ---
 
+# 📸 Project Screenshots
+
+## GraphQL Playground
+
+![GraphQL Playground](assets/img1.png)
+
+---
+
+## User Authentication (Signup & Login)
+
+![Authentication](assets/img3.png)
+
+---
+
+## User Profile
+
+![User Profile](assets/img4.png)
+
+---
+
+## Product Management
+
+![Product Management](assets/img2.png)
+
+---
+
 # ✨ Features
 
-- User Registration
-- User Login
+- REST API
+- GraphQL API (Apollo Server)
 - JWT Authentication
 - Refresh Token Authentication
-- Logout
+- Secure Logout
+- User Registration
+- User Login
 - User Profile
 - Update Profile
-- Product CRUD
+- Product CRUD Operations
 - Product Search
 - MongoDB Atlas Integration
 - Mongoose ODM
 - Password Hashing using bcrypt
-- Global Error Handling Middleware
+- Global Error Handling
+- GraphQL Error Handling
+- Service Layer Architecture
 - Async Error Handling
-- Environment Variable Configuration
-- RESTful API Design
+- Environment Variables
+- Production Ready
 
 ---
 
 # 🛠 Tech Stack
 
+### Backend
+
 - Node.js
 - Express.js
 - MongoDB Atlas
 - Mongoose
+
+### Authentication
+
 - JWT
+- Refresh Tokens
 - bcrypt
+
+### GraphQL
+
+- Apollo Server
+- GraphQL
+
+### Utilities
+
 - dotenv
 - express-async-handler
 
@@ -50,20 +102,27 @@ https://github.com/reactxnative/ShopApp-Backend
 
 # 📂 Project Structure
 
-```
+```text
 src
 ├── config
 ├── controllers
+├── graphql
+│   ├── resolvers
+│   ├── schema
+│   └── index.js
 ├── middleware
 ├── models
 ├── routes
+├── services
 ├── utils
 └── server.js
 ```
 
 ---
 
-# 📌 Authentication APIs
+# 🌐 REST API Endpoints
+
+## Authentication
 
 | Method | Endpoint |
 |---------|----------|
@@ -74,7 +133,7 @@ src
 
 ---
 
-# 👤 User APIs
+## User
 
 | Method | Endpoint |
 |---------|----------|
@@ -83,16 +142,47 @@ src
 
 ---
 
-# 📦 Product APIs
+## Product
 
 | Method | Endpoint |
 |---------|----------|
 | POST | /api/products/add |
 | GET | /api/products/:id |
-| PATCH | /api/products/:id |
 | PUT | /api/products/:id |
+| PATCH | /api/products/:id |
 | DELETE | /api/products/:id |
 | GET | /api/products/search?name=keyword |
+
+---
+
+# 🚀 GraphQL
+
+### Endpoint
+
+```
+POST /graphql
+```
+
+### Authentication
+
+#### Mutations
+
+- signup
+- login
+- refreshToken
+- logout
+
+#### Queries
+
+- getProfile
+- getProduct
+- searchProducts
+
+#### Product Mutations
+
+- addProduct
+- updateProduct
+- deleteProduct
 
 ---
 
@@ -100,19 +190,31 @@ src
 
 Protected APIs require a Bearer Token.
 
-```
+```http
 Authorization: Bearer <access_token>
 ```
+
+The same Authorization header is used for both REST APIs and GraphQL requests.
 
 ---
 
 # ⚙️ Installation
 
+Clone the repository
+
 ```bash
 git clone https://github.com/reactxnative/ShopApp-Backend.git
+```
 
+Navigate into the project
+
+```bash
 cd ShopApp-Backend
+```
 
+Install dependencies
+
+```bash
 npm install
 ```
 
@@ -128,7 +230,7 @@ ACCESS_TOKEN_SECRET=your_access_secret
 REFRESH_TOKEN_SECRET=your_refresh_secret
 ```
 
-Start the server
+Start the development server
 
 ```bash
 npm run dev
@@ -136,31 +238,51 @@ npm run dev
 
 ---
 
-# 🧪 API Testing
+# 🧪 Testing
 
-A complete Postman Collection is included in this repository for testing all APIs. :contentReference[oaicite:0]{index=0}
+### REST APIs
+
+- Postman
+
+### GraphQL APIs
+
+- Apollo Sandbox
 
 ---
 
 # 📈 Highlights
 
-- Production-ready REST API
-- JWT + Refresh Token Authentication
-- Secure Password Hashing
-- MongoDB Atlas Cloud Database
+- REST + GraphQL in a single backend
+- Apollo Server Integration
+- JWT Authentication
+- Refresh Token Authentication
+- MongoDB Atlas
+- Mongoose ODM
 - Global Error Handling
-- RESTful Architecture
-- Clean Folder Structure
-- Ready for Deployment
+- GraphQL Error Handling
+- Service Layer Architecture
+- Scalable Folder Structure
+- Clean Code Architecture
+- Render Deployment
 
 ---
 
-# 📬 Connect With Me
+# 👨‍💻 About Me
 
 **Rahul Singh**
 
-Senior React Native & React Developer
-- Gmail: reactxnative@gmail.com
-- LinkedIn: https://www.linkedin.com/in/rahul-singh-react-native/
-- Portfolio: https://rahul-singh-profile.vercel.app/
-- YouTube: https://youtube.com/@ReactXNativeCode
+Senior React Native | React | Node.js | GraphQL Developer
+
+📧 Email  
+reactxnative@gmail.com
+
+💼 LinkedIn  
+https://www.linkedin.com/in/rahul-singh-react-native/
+
+🌐 Portfolio  
+https://rahul-singh-profile.vercel.app/
+
+📺 YouTube  
+https://youtube.com/@ReactXNativeCode
+
+⭐ If you found this project useful, don't forget to **Star** the repository.

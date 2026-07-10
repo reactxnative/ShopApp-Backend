@@ -4,6 +4,7 @@ const path = require("path");
 const usersFilePath = path.join(__dirname, "../data/users.json");
 const User = require("../models/User");
 const asyncHandler = require("express-async-handler");
+const userService = require("../services/user.service");
 
 /**
  * Get User Profile
@@ -45,24 +46,10 @@ const asyncHandler = require("express-async-handler");
 // };
 
 const getProfile = asyncHandler(async (req, res) => {
+  const response = await userService.getProfile(req.user.id);
 
-  // Logged in user id from JWT
-  const userId = req.user.id;
+  return res.status(200).json(response);
 
-  // Read user from db
-  const user = await User.findById(userId);
-
-  if (!user) {
-
-    const error = new Error("User not found.");
-    error.statusCode = 404;
-    throw error;
-  }
-
-  return res.status(200).json({
-    success: true,
-    data: user,
-  });
 
 })
 
@@ -119,35 +106,9 @@ const getProfile = asyncHandler(async (req, res) => {
 // };
 
 const updateProfile = asyncHandler(async (req, res) => {
+  const response = await userService.updateProfile(req.user.id, req.body.name, req.body.mobile, req.body.address);
 
-  const userId = req.user.id;
-
-  const { name, mobile, address } = req.body;
-
-  // Read user from mongoDB
-  const user = await User.findById(userId);
-
-
-  if (!user) {
-    const error = new Error("User not found.");
-    error.statusCode = 404;
-    throw error;
-  }
-
-  // Update only provided fields
-  user.name = name ?? user.name;
-  user.mobile = mobile ?? user.mobile;
-  user.address = address ?? user.address;
-
-  // Save updated user
-  await user.save();
-
-
-  return res.status(200).json({
-    success: true,
-    message: "Profile updated successfully.",
-    data: user,
-  });
+  return res.status(200).json(response);
 
 })
 
