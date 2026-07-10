@@ -5,6 +5,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const RefreshToken = require("../models/RefreshToken");
+const authService = require("../services/auth.service");
 
 // users.json ka path
 const usersFilePath = path.join(__dirname, "../data/users.json");
@@ -72,47 +73,14 @@ const asyncHandler = require("express-async-handler");
 //   }
 // };
 const signup = asyncHandler(async (req, res) => {
-  const { name, email, password } = req.body;
-
-  // Basic Validation
-  if (!name || !email || !password) {
-
-
-    const error = new Error("Name, Email and Password are required.");
-    error.statusCode = 400;
-    throw error;
-  }
-
-
-  // Check Email Exists
-  const userExists = await User.findOne({ email: email.toLowerCase() });
-
-  if (userExists) {
-
-    const error = new Error("Email already exists.");
-    error.statusCode = 409;
-    throw error;
-
-  }
-
-  const hashedPassword = bcrypt.hashSync(password, 10);
-  // New User Object
-
-
-  // Create User in Database
-  const createdUser = await User.create({
-    name,
-    email: email.toLowerCase(),
-    password: hashedPassword,
-  });
-
-  const newUser = await User.findById(createdUser._id);
-
+  const newUser = await authService.signup(req.body);
+ 
   return res.status(201).json({
     success: true,
     message: "User registered successfully.",
     data: newUser,
   });
+
 })
 
 // const login = async (req, res) => {
@@ -197,81 +165,9 @@ const signup = asyncHandler(async (req, res) => {
 // };
 
 const login = asyncHandler(async (req, res) => {
+   const loginResponse = await authService.login(req.body);
 
-  const { email, password } = req.body;
-
-  // Validation
-  if (!email || !password) {
-
-
-    const error = new Error("Email and Password are required.");
-    error.statusCode = 400;
-    throw error;
-  }
-
-  // Read user from database
-  const user = await User.findOne({ email: email.toLowerCase() }).select("+password");
-
-
-  if (!user) {
-
-
-    const error = new Error("Invalid email or password");
-    error.statusCode = 401;
-    throw error;
-  }
-
-  // Compare password
-  const isMatch = await bcrypt.compare(password, user.password);
-
-  if (!isMatch) {
-
-    const error = new Error("Invalid email or password");
-    error.statusCode = 401;
-    throw error;
-  }
-
-  // Generate JWT
-  const accessToken = jwt.sign(
-    {
-      id: user._id,
-      email: user.email,
-    },
-    process.env.ACCESS_TOKEN_SECRET,
-    {
-      expiresIn: "7d",
-    }
-  );
-
-  const refreshToken = jwt.sign(
-    {
-      id: user._id,
-      email: user.email,
-    },
-    process.env.REFRESH_TOKEN_SECRET,
-    {
-      expiresIn: "30d",
-    }
-  );
-
-  // Save Refresh Token
-  await RefreshToken.create({
-    userId: user._id,
-    token: refreshToken,
-    expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-  });
-
-  // Remove password
-  const userWithoutPassword = user.toObject();
-  delete userWithoutPassword.password;
-
-  return res.status(200).json({
-    success: true,
-    message: "Login Successful",
-    accessToken,
-    refreshToken,
-    user: userWithoutPassword,
-  });
+   return res.status(200).json(loginResponse);
 
 })
 
@@ -401,26 +297,8 @@ const refreshToken = asyncHandler(async (req, res) => {
  * Logout Controller
  */
 const logout = asyncHandler(async (req, res) => {
-  const { refreshToken } = req.body;
-
-  if (!refreshToken) {
-    const error = new Error("Refresh token is required.");
-    error.statusCode = 400;
-    throw error;
-  }
-
-
-
-  await RefreshToken.deleteOne({
-    token: refreshToken,
-  });
-
-  return res.status(200).json({
-    success: true,
-    message: "Logout successful.",
-  });
-
-
+  const response = await authService.logout(req.body);
+  return res.status(200).json(response);
 })
 
 module.exports = {
