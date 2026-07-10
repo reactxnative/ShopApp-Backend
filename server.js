@@ -18,19 +18,15 @@ const authRoutes = require("./src/routes/auth.routes");
 const userRoutes = require("./src/routes/user.routes");
 const productRoutes = require("./src/routes/product.routes");
 
-// Register Routes
+// REST Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/products", productRoutes);
-
-
 
 // Health Check
 app.get("/", (req, res) => {
   res.send("Server is running 🚀");
 });
-
-app.use(errorHandler);
 
 const PORT = process.env.PORT || 3000;
 
@@ -38,29 +34,32 @@ const startServer = async () => {
   try {
     await connectDB();
 
-    // start graphql server
     await graphqlServer.start();
+
     app.use(
       "/graphql",
       express.json(),
-      expressMiddleware(graphqlServer,{
+      expressMiddleware(graphqlServer, {
         context: async ({ req }) => {
-       
           let user = null;
+
           if (req.headers.authorization) {
             user = await verifyAccessToken(req.headers.authorization);
           }
+
           return { user };
-        }
+        },
       })
     );
 
+    // ✅ Error handler LAST
+    app.use(errorHandler);
+
     app.listen(PORT, () => {
-      console.log(`🚀 Server is running on http://localhost:${PORT}`);
-      console.log(`🚀 GraphQL server is running on http://localhost:${PORT}/graphql `)
+      console.log(`🚀 Server started on port ${PORT}`);
     });
   } catch (error) {
-    console.error("Failed to start server:", error.message);
+    console.error(error);
   }
 };
 
