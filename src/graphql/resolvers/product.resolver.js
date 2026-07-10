@@ -1,6 +1,6 @@
 const productService = require("../../services/product.service");
 const throwGraphQLError = require("../../utils/graphqlError");
-const AppError = require("../../utils/appError");
+const AppError = require("../../utils/AppError");
 
 module.exports = {
     Query: {
